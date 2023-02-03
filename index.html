@@ -11,6 +11,8 @@
 </head>
 <body>
     <div class="container">
+        <input class="btn btn-primary" type="button" id="createGame" value="Create game" />
+        <input class="btn btn-primary" type="button" id="joinGame" value="Join game" />
         <input class="btn btn-primary" type="button" id="startGame" value="Start game" />
         <input class="btn btn-primary" type="button" id="sendQuestion" value="Send question" />
         <div id="question"></div>
@@ -20,6 +22,14 @@
 
     <script>
         const socket = new WebSocket('ws://localhost:9000');
+
+        $('#createGame').click(function () {
+            socket.send(JSON.stringify({ "type": "createGame", "name": "domi game" }));
+        });
+
+        $('#joinGame').click(function () {
+            socket.send(JSON.stringify({ "type": "joinGame", "roomId": 123, "playerId": 123 }));
+        });
 
         $('#startGame').click(function () {
             socket.send(JSON.stringify({ "type": "startGame" }));
