@@ -1,0 +1,89 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="homepage">
+    <meta name="author" content="">
+    <link rel="icon" href="img/favicon.ico">
+
+    <title>QRoots</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+
+     <!-- JS Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Custom styles for this template -->
+    <link href="css/homepage.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="container-fluid bg-1 text-center">
+        <img class="mb-4" src="img/logo.png" alt="" width="200" height="200">
+        <h3 class="mb-3 font-weight-normal">QRoots</h3>
+        </br>
+        <h1 class="mb-3">Do you even Roots ?</h1>
+    </div>
+
+    <div class="container-fluid bg-2 text-center" id="form_container" style="visibility: visible;">
+        <form class="form">
+			<input type="username" class="form_field" id="username" name="username" placeholder="Enter your name here !" />
+            <button id="username_submit" type="button"  class="btn btn-success">Start</button>
+        </br>
+            <input type="room_name" class="form_field" id="room_name" name="room_name" placeholder="Enter a room name here !" style="visibility: hidden;"/>
+            <button id="room_name_submit" type="button"  class="btn btn-success" style="visibility: hidden;">Launch ! </button>
+		</form>
+    </div>
+
+    <div class="container-fluid bg-3 text-center" id="start_container" style="visibility: hidden;">
+        <form class="form">
+            <button id="startGame_submit" type="button"  class="btn btn-success">Start New Game</button>
+            <button id="joinRoom_submit" type="button"  class="btn btn-success">Join a Room</button>
+		</form>
+    </div>
+
+
+  </body>
+  <script>
+
+    $(document).ready(function(){
+
+        // Save Username
+        $("#username_submit").click(function(){     
+
+            var userName = $("#username").val();
+
+            $("#username").hide();
+            $('#username_submit').hide();
+            $("#start_container").css("visibility", "visible");
+
+            console.log(userName);
+
+        });
+
+        $("#startGame_submit").click(function(){     
+
+            $("#room_name").css("visibility", "visible");
+            $("#room_name_submit").css("visibility", "visible");
+
+        });
+
+        $("#room_name_submit").click(function(){     
+
+            var roomName = $("#room_name").val();
+            console.log(roomName);
+
+        });
+
+
+
+    });
+
+  </script>
+</html>
