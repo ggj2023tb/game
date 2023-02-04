@@ -217,6 +217,8 @@ wss.on('connection', function connection(ws) {
             rooms[obj.roomId].status = "running";
         } else if (obj.type == 'updateGame') {
             ws.send(JSON.stringify({type: 'updateGame', room: rooms[obj.roomId]}));
+        } else if (obj.type == 'getRooms') {
+            ws.send(JSON.stringify({type: 'getRooms', rooms: rooms}));
         } else if (obj.type == 'awnser') {
             rooms[obj.roomId].questions.forEach (function (question, index) {
                 if (question.question.question == obj.question) {

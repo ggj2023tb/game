@@ -55,6 +55,9 @@
             $('#content').load('stages/create-game.html');
         }).on('click', '#joinRoomStage', function(event){
             $('#content').load('stages/join-room.html');
+            setInterval(function () {
+                socket.send(JSON.stringify({ "type": "getRooms" }));
+            }, 5000);
         }).on('submit', '#createGameForm', function(event){
             event.preventDefault();
             socket.send(JSON.stringify({ "type": "createGame", "name": $('#roomName').val() }));
@@ -81,6 +84,13 @@
             setInterval(function () {
                 socket.send(JSON.stringify({ "type": "updateGame", "roomId": roomId }));
             }, 1000);
+        }
+
+        if (data.type == 'getRooms') {
+            /*
+             * loop over rooms and create html for rooms with status == "open"
+             * $('xyz').html(generateHTML). add room.roomId as "data-roomId"
+             */
         }
 
         if (data.type == 'updateGame') {
