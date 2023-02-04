@@ -115,7 +115,7 @@
                     inGame = true;
                     data.room.players.forEach(function (player, index) {
                         $('#canvas').append(
-                            '<div data-points="'+player.points+'" class="trunk_'+player.id+' col-lg-3" style="background-repeat:no-repeat;background-image: url(img/'+index+'.png); height: 150px; width: 200px;"></div>'
+                            '<div class="col-lg-3">'+ player.name +'<div data-points="'+player.points+'" class="trunk_'+player.id+'" style="background-repeat:no-repeat;background-image: url(img/'+index+'.png); background-position:top; height: 150px;"></div></div>'
                         );
                     });
                 });
