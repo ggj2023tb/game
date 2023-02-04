@@ -213,7 +213,6 @@ wss.on("connection", function connection(ws) {
       ws.send(JSON.stringify({ type: "createGame", roomId: roomId }));
     } else if (obj.type == "joinRoom") {
       let playerId = Date.now();
-      console.log(getRoom(rooms, obj.roomId));
       getRoom(rooms, obj.roomId).players.push({
         points: 0,
         id: playerId,

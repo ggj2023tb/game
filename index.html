@@ -12,7 +12,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link href="css/styles.css" rel="stylesheet">
-    <link href="css/game.css" rel="stylesheet" />
   </head>
   <body>
     <div id="content">
@@ -61,6 +60,7 @@
         }).on('click', '#joinRoomStage', function(event){
             $('#content').load('stages/join-room.html', function () {
                 $('#user').html('Your name: <strong>'+playerName+'</strong>');
+                socket.send(JSON.stringify({ "type": "getRooms" }));
             });
             setInterval(function () {
                 socket.send(JSON.stringify({ "type": "getRooms" }));
@@ -70,8 +70,9 @@
             socket.send(JSON.stringify({ "type": "createGame", "name": $('#roomName').val() }));
         }).on('click', '#startGame', function(){
             socket.send(JSON.stringify({ "type": "startGame", "roomId": roomId }));
-        }).on('click', '#joinOpenRoom', function(){
-            roomId = $(this).data("roomId");
+        }).on('click', '.joinOpenRoom', function(){
+            roomId = $(this).attr("data-roomId");
+            console.log(roomId, JSON.stringify({ "type": "joinRoom", "roomId": roomId, "playerName": playerName }));
             socket.send(JSON.stringify({ "type": "joinRoom", "roomId": roomId, "playerName": playerName }));
         }).on('click', '.awnserButton', function(){
             $('.awnserButton').prop('disabled', true);
@@ -99,16 +100,10 @@
         }
 
         if (data.type == 'getRooms') {
-            console.log(data.rooms);
-            /*
-             * loop over rooms and create html for rooms with status == "open"
-             * $('xyz').html(generateHTML). add room.roomId as "data-roomId"
-             */
             let openRoomsCards = ''; 
             data.rooms.forEach(function(room, index){
                 if (room.status == 'open') {
-                    console.log(room.id );
-                    openRoomsCards += '<div class="room-card col-md-4"><div class="room-content"><h4 class="title"> Room #'+ room.id +'</h4></div><ul class="join"><button type="button"  class="btn btn-success" id="joinOpenRoom" data-roomId = '+ room.id +' > Join !</button></ul></div>';
+                    openRoomsCards += '<div class="room-card col-md-4"><div class="room-content"><h4 class="title"> Room - '+ room.name +'</h4></div><ul class="join"><button type="button"  class="btn btn-success joinOpenRoom" data-roomId="'+ room.id +'"> Join !</button></ul></div>';
                 }
             });
             $('.container-room-card .row').html(openRoomsCards);
@@ -119,8 +114,8 @@
                 $('#content').load('stages/game.html', function () {
                     inGame = true;
                     data.room.players.forEach(function (player, index) {
-                        $('.canvas').append(
-                            '<div data-points="'+player.points+'" class="trunk_'+player.id+'" style="background-repeat:no-repeat;background-image: url(img/'+index+'.png); height: 150px; width: 200px;"></div>'
+                        $('#canvas').append(
+                            '<div data-points="'+player.points+'" class="trunk_'+player.id+' col-lg-3" style="background-repeat:no-repeat;background-image: url(img/'+index+'.png); height: 150px; width: 200px;"></div>'
                         );
                     });
                 });
