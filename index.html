@@ -50,11 +50,18 @@
         $(document).on('submit', '#homeForm', function(event){
             event.preventDefault();
             playerName = $("#username").val();
-            $('#content').load('stages/menu.html');
+
+            $('#content').load('stages/menu.html', function () {
+                $('#user').html('Your name: <strong>'+playerName+'</strong>');
+            });
         }).on('click', '#createGameStage', function(event){
-            $('#content').load('stages/create-game.html');
+            $('#content').load('stages/create-game.html', function () {
+                $('#user').html('Your name: <strong>'+playerName+'</strong>');
+            });
         }).on('click', '#joinRoomStage', function(event){
-            $('#content').load('stages/join-room.html');
+            $('#content').load('stages/join-room.html', function () {
+                $('#user').html('Your name: <strong>'+playerName+'</strong>');
+            });
             setInterval(function () {
                 socket.send(JSON.stringify({ "type": "getRooms" }));
             }, 1000);
@@ -80,7 +87,9 @@
         if (data.type == 'joinRoom') {
             roomId = data.roomId;
             playerId = data.playerId;
-            $('#content').load('stages/lobby.html');
+            $('#content').load('stages/lobby.html', function () {
+                $('#user').html('Your name: <strong>'+playerName+'</strong>');
+            });
             setInterval(function () {
                 socket.send(JSON.stringify({ "type": "updateGame", "roomId": roomId }));
             }, 1000);
