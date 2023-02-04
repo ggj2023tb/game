@@ -87,12 +87,20 @@
         }
 
         if (data.type == 'getRooms') {
-            // console.log(data.rooms);
+            console.log(data.rooms);
             /*
              * loop over rooms and create html for rooms with status == "open"
              * $('xyz').html(generateHTML). add room.roomId as "data-roomId"
              */
-        }
+            let openRoomsCards = ''; 
+            data.rooms.forEach(function(room, index){
+                if (room.status == 'open') {
+                    console.log(room.id );
+                    openRoomsCards += '<div class="room-card col-md-4"><div class="room-content" room_id = '+ room.id +'><h4 class="title"> Room #'+ room.id +'</h4></div><ul class="join"><li>Join</li></ul></div>';
+                }
+            });
+            $('.container-room-card .row').html(openRoomsCards);
+        };
 
         if (data.type == 'updateGame') {
             if (!inGame && data.room.status == 'running') {

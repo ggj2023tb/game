@@ -218,7 +218,6 @@ wss.on("connection", function connection(ws) {
         id: playerId,
         name: obj.playerName,
       });
-
       ws.send(
         JSON.stringify({
           type: "joinRoom",
@@ -228,7 +227,6 @@ wss.on("connection", function connection(ws) {
       );
     } else if (obj.type == "startGame") {
       getRoom(rooms, obj.roomId).status = "running";
-      console.log(rooms);
     } else if (obj.type == "updateGame") {
       ws.send(
         JSON.stringify({ type: "updateGame", room: getRoom(rooms, obj.roomId) })
