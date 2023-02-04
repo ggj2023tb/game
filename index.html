@@ -131,12 +131,13 @@
 
             if (inGame) {
                 let currentTime = Date.now();
+                let maxQuestion = data.room.questions.length;
 
                 data.room.questions.forEach(function (question, index) {
                     if (currentTime >= question.startDate && currentTime <= question.endDate) {
                         if (currentQuestion == null || (currentQuestion.question.question !== question.question.question)) {
                             currentQuestion = question;
-                            $('#question').html('<h2>' + question.question.question + '</h2>');
+                            $('#question').html('<h2>' + question.question.question + '</h2><br />('+ (index+1) +'/'+ maxQuestion + ' question)');
                             let html = '';
                             html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_0" type="button" value="' + question.question['option_0'] + '"/>';
                             html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_1" type="button" value="' + question.question['option_1'] + '"/>';
