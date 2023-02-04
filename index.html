@@ -157,7 +157,7 @@
 
                 data.room.players.forEach(function (player, index) {
                     if ($('.trunk_'+player.id).data('points') < player.points) {
-                        $('.trunk_'+player.id).animate({height: (150+(100*player.points))},1500);
+                        $('.trunk_'+player.id).animate({height: (150+(25*player.points))},1500);
                         $('.trunk_'+player.id).data('points', player.points);
                     }
                 });
