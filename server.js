@@ -3,6 +3,7 @@ const wss = new WebSocket.Server({ port: 9000 });
 Array.prototype.random = function () {
     return this[Math.floor((Math.random()*this.length))];
 }
+/*
 const questions = [
     {
         "question": "Which of the following is not a greenhouse gas?",
@@ -146,6 +147,34 @@ const questions = [
         "option_3": "Obsession with convenience"
     }
 ];
+*/
+
+const questions = [
+        {
+            "question": "1+2",
+            "answer": "option_0",
+            "option_0": "3",
+            "option_1": "2",
+            "option_2": "1",
+            "option_3": "4"
+        },
+        {
+            "question": "3+4",
+            "answer": "option_0",
+            "option_0": "7",
+            "option_1": "8",
+            "option_2": "9",
+            "option_3": "10"
+        },
+        {
+            "question": "1*3",
+            "answer": "option_0",
+            "option_0": "3",
+            "option_1": "1",
+            "option_2": "5",
+            "option_3": "10"
+        },
+];
 
 let rooms = [];
 
@@ -158,14 +187,14 @@ wss.on('connection', function connection(ws) {
             let roomId = Date.now();
 
             questionList = new Array();
-            for (var i = 0; i < 5; i++) {
+            questions.forEach(function (question, index) {
                 questionList.push({
                     startDate: startDate,
                     endDate: startDate + 10000,
-                    question: questions.random()
+                    question: question
                 });
                 startDate += 10000;
-            }
+            });
 
             rooms[roomId] = {
                 "name": obj.name,

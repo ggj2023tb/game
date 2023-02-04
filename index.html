@@ -80,6 +80,10 @@
             if (!inGame && data.room.status == 'running') {
                 $('#content').load('stages/game.html', function () {
                     inGame = true;
+
+                    data.room.players.forEach(function (player, index) {
+                        $('.canvas').append('<div class="tree" style="padding-right: 250px;"><div class="trunk trunk_'+player.id+'" data-points="0"></div></div>');
+                    });
                 });
             }
 
@@ -92,10 +96,10 @@
                             currentQuestion = question;
                             $('#question').html('<h2>' + question.question.question + '</h2>');
                             let html = '';
-                            html += '<input class="awnserButton btn btn-primary" data-question="' + question.question.question + '" data-answer="option_0" type="button" value="' + question.question['option_0'] + '"/>';
-                            html += '<input class="awnserButton btn btn-primary" data-question="' + question.question.question + '" data-answer="option_1" type="button" value="' + question.question['option_1'] + '"/>';
-                            html += '<input class="awnserButton btn btn-primary" data-question="' + question.question.question + '" data-answer="option_2" type="button" value="' + question.question['option_2'] + '"/>';
-                            html += '<input class="awnserButton btn btn-primary" data-question="' + question.question.question + '" data-answer="option_3" type="button" value="' + question.question['option_3'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_0" type="button" value="' + question.question['option_0'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_1" type="button" value="' + question.question['option_1'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_2" type="button" value="' + question.question['option_2'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_3" type="button" value="' + question.question['option_3'] + '"/>';
                             $('#answers').html(html);
                         }
                     }
@@ -109,18 +113,12 @@
                     }
                 }
 
-                let playersHtml = '';
                 data.room.players.forEach(function (player, index) {
-                    branchHTML = '';
-
-                    for (var i=0; i<player.points;i++) {
-                        branchHTML += '<div class="branch"><div class="leaf"></div></div>';
+                    if ($('.trunk_'+player.id).data('points') < player.points) {
+                        $('.trunk_'+player.id).append('<div class="branch"><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div></div>');
+                        $('.trunk_'+player.id).data('points', player.points);
                     }
-
-                    playersHtml += '<div class="tree" style="padding-right: 250px;"><div class="trunk">'+branchHTML+'</div></div>'
                 });
-
-                $('.canvas').html(playersHtml);
             }
         }
     });
