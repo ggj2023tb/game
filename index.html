@@ -34,7 +34,12 @@
     </div>
   </body>
   <script>
-    const socket = new WebSocket('ws://localhost:9000');
+    let socket;
+    if (location.hostname === 'localhost') {
+        socket = new WebSocket('ws://localhost:9000');
+    } else {
+        socket = new WebSocket('ws://195.201.251.92:9000');
+    }
     let playerName;
     let roomId;
     let inGame = false;
