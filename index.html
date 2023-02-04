@@ -1,62 +1,128 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script
-            src="https://code.jquery.com/jquery-3.6.3.min.js"
-            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-            crossorigin="anonymous"></script>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="css/styles.css" rel="stylesheet" />
-</head>
-<body>
-    <div class="container">
-        <input class="btn btn-primary" type="button" id="createGame" value="Create game" />
-        <input class="btn btn-primary" type="button" id="joinGame" value="Join game" />
-        <input class="btn btn-primary" type="button" id="startGame" value="Start game" />
-        <input class="btn btn-primary" type="button" id="sendQuestion" value="Send question" />
-        <div id="question"></div>
-        <div class="canvas"></div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="homepage">
+    <meta name="author" content="">
+    <link rel="icon" href="img/favicon.ico">
+    <title>QRoots</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet">
+    <link href="css/game.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="content">
+        <div class="container-fluid text-center">
+            <img class="mb-4" src="img/logo.png" style="width: 200px; height: 200px;" />
+            <h3 class="mb-3 font-weight-normal">QRoots</h3>
+            <br />
+            <h1 class="mb-3">Do you even Roots ?</h1>
+            <div class="row">
+                <div class="offset-lg-5 col-lg-2">
+                    <form id="homeForm" method="post">
+                        <input type="text" class="form-control" id="username" required placeholder="Enter your name ..." />
+                        <br />
+                        <button type="submit" class="btn btn-success form-control">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+  </body>
+  <script>
+    const socket = new WebSocket('ws://localhost:9000');
+    let playerName;
+    let roomId;
+    let inGame = false;
+    let playerId;
+    let currentQuestion = null;
 
+    $(document).ready(function(){
+        $(document).on('submit', '#homeForm', function(event){
+            event.preventDefault();
+            playerName = $("#username").val();
+            $('#content').load('stages/menu.html');
+        }).on('click', '#createGameStage', function(event){
+            $('#content').load('stages/create-game.html');
+        }).on('submit', '#createGameForm', function(event){
+            event.preventDefault();
+            socket.send(JSON.stringify({ "type": "createGame", "name": $('#roomName').val() }));
+        }).on('click', '#startGame', function(){
+            socket.send(JSON.stringify({ "type": "startGame", "roomId": roomId }));
+        }).on('click', '.awnserButton', function(){
+            $('.awnserButton').prop('disabled', true);
+            socket.send(JSON.stringify({ "type": "awnser", "roomId": roomId, "playerId": playerId, "question": $(this).data('question'), "answer": $(this).data('answer') }));
+        })
+    });
 
-    <script>
-        const socket = new WebSocket('ws://localhost:9000');
+    socket.addEventListener('message', (event) => {
+        data = JSON.parse(event.data);
 
-        $('#createGame').click(function () {
-            socket.send(JSON.stringify({ "type": "createGame", "name": "domi game" }));
-        });
+        if (data.type == 'createGame') {
+            roomId = data.roomId;
+            socket.send(JSON.stringify({ "type": "joinRoom", "roomId": roomId, "playerName": playerName }));
+        }
 
-        $('#joinGame').click(function () {
-            socket.send(JSON.stringify({ "type": "joinGame", "roomId": 123, "playerId": 123 }));
-        });
+        if (data.type == 'joinRoom') {
+            roomId = data.roomId;
+            playerId = data.playerId;
+            $('#content').load('stages/lobby.html');
+            setInterval(function () {
+                socket.send(JSON.stringify({ "type": "updateGame", "roomId": roomId }));
+            }, 1000);
+        }
 
-        $('#startGame').click(function () {
-            socket.send(JSON.stringify({ "type": "startGame" }));
-        });
-        $('#sendQuestion').click(function () {
-            socket.send(JSON.stringify({ "type": "sendQuestion" }));
-        });
-
-        socket.addEventListener('message', (event) => {
-            data = JSON.parse(event.data)
-
-            if (data.type == 'addPlayer') {
-                $('.canvas').append(
-                    '<div class="tree" style="padding-right: 250px;"><div class="trunk"></div></div>'
-                )
+        if (data.type == 'updateGame') {
+            if (!inGame && data.room.status == 'running') {
+                $('#content').load('stages/game.html', function () {
+                    inGame = true;
+                });
             }
 
-            if (data.type == 'question') {
-                let html = data.msg;
+            if (inGame) {
+                let currentTime = Date.now();
 
-                for (option in data.options) {
-                    html += '<input class="btn btn-primary" type="button" value="'+data.options[option]+'"/>';
+                data.room.questions.forEach(function (question, index) {
+                    if (currentTime >= question.startDate && currentTime <= question.endDate) {
+                        if (currentQuestion == null || (currentQuestion.question.question !== question.question.question)) {
+                            currentQuestion = question;
+                            $('#question').html('<h2>' + question.question.question + '</h2>');
+                            let html = '';
+                            html += '<input class="awnserButton btn btn-primary" data-question="' + question.question.question + '" data-answer="option_0" type="button" value="' + question.question['option_0'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary" data-question="' + question.question.question + '" data-answer="option_1" type="button" value="' + question.question['option_1'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary" data-question="' + question.question.question + '" data-answer="option_2" type="button" value="' + question.question['option_2'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary" data-question="' + question.question.question + '" data-answer="option_3" type="button" value="' + question.question['option_3'] + '"/>';
+                            $('#answers').html(html);
+                        }
+                    }
+                });
+
+                if (currentQuestion) {
+                    timer = Math.ceil((currentQuestion.endDate - currentTime) / 1000);
+
+                    if (timer >= 0) {
+                        $('#timer').html(timer);
+                    }
                 }
 
-                $('#question').html(html);
+                let playersHtml = '';
+                data.room.players.forEach(function (player, index) {
+                    branchHTML = '';
+
+                    for (var i=0; i<player.points;i++) {
+                        branchHTML += '<div class="branch"><div class="leaf"></div></div>';
+                    }
+
+                    playersHtml += '<div class="tree" style="padding-right: 250px;"><div class="trunk">'+branchHTML+'</div></div>'
+                });
+
+                $('.canvas').html(playersHtml);
             }
-        });
-    </script>
-</body>
+        }
+    });
+  </script>
 </html>

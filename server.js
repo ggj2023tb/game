@@ -149,36 +149,59 @@ const questions = [
 
 let rooms = [];
 
-function updateGame(ws, roomId) {
-    ws.send(JSON.stringify({"roomId": roomId, "data": rooms[roomId]));
-}
-
 wss.on('connection', function connection(ws) {
     ws.on('message', function (msg) {
         obj = JSON.parse(msg);
 
         if (obj.type == 'createGame') {
-            let players = new Array();
+            let startDate = Date.now();
             let roomId = Date.now();
-            players[obj.playerId] = {"points": 0};
+
+            questionList = new Array();
+            for (var i = 0; i < 5; i++) {
+                questionList.push({
+                    startDate: startDate,
+                    endDate: startDate + 10000,
+                    question: questions.random()
+                });
+                startDate += 10000;
+            }
+
             rooms[roomId] = {
                 "name": obj.name,
-                "players": players
+                "status": "open",
+                "players": [],
+                "questions": questionList
             }
 
-            updateGame(ws, roomId);
-        } else if (obj.type == 'joinGame') {
-            rooms[obj.roomId].players[obj.playerId] = {
-                points: 0
-            }
+            ws.send(JSON.stringify({type: 'createGame', roomId: roomId}));
+        } else if (obj.type == 'joinRoom') {
+            let playerId = Date.now();
+            rooms[obj.roomId].players.push({
+                points: 0,
+                id: playerId,
+                name: obj.playerName
+            });
 
-            console.log(rooms);
+            ws.send(JSON.stringify({type: 'joinRoom', playerId: playerId, roomId: obj.roomId}));
+        } else if (obj.type == 'startGame') {
+            rooms[obj.roomId].status = "running";
         } else if (obj.type == 'updateGame') {
-        }
-
-        if (obj.type == 'sendQuestion') {
-            question = questions.random();
-            ws.send(JSON.stringify({ "roomId": "123", "type": "question", "msg": question.question, "options": [question.option_0, question.option_1, question.option_2, question.option_3] }));
+            ws.send(JSON.stringify({type: 'updateGame', room: rooms[obj.roomId]}));
+        } else if (obj.type == 'awnser') {
+            rooms[obj.roomId].questions.forEach (function (question, index) {
+                if (question.question.question == obj.question) {
+                    rooms[obj.roomId].players.forEach(function (player, playerIndex) {
+                        if (player.id == obj.playerId) {
+                            if (obj.answer == question.question.answer) {
+                                rooms[obj.roomId].players[playerIndex].points++;
+                            } else {
+                                //rooms[obj.roomId].players[playerIndex].points--;
+                            }
+                        }
+                    });
+                }
+            });
         }
     });
 });
