@@ -148,7 +148,7 @@ const questions = [
     }
 ];
 */
-
+/*
 const questions = [
   {
     question: "1+2",
@@ -175,6 +175,154 @@ const questions = [
     option_3: "10",
   },
 ];
+*/
+const questions = [
+  {
+   "question": "What is the root cause of the increasing cases of chronic diseases?",
+   "answer": "option_3",
+   "option_0": "Lack of sleep",
+   "option_1": "Excessive use of technology",
+   "option_2": "Poor hygiene",
+   "option_3": "Unhealthy lifestyle choices"
+  },
+  {
+   "question": "What is the root cause of the disparities in educational outcomes among students?",
+   "answer": "option_3",
+   "option_0": "Poor teaching methods",
+   "option_1": "Inadequate funding for education",
+   "option_2": "Unmotivated students",
+   "option_3": "Inequities in the education system"
+  },
+  {
+   "question": "What is the root cause of the current environmental crisis?",
+   "answer": "option_0",
+   "option_0": "Human activities and industrialization",
+   "option_1": "Natural disasters",
+   "option_2": "Poor waste management practices",
+   "option_3": "Inefficient use of energy"
+  },
+  {
+   "question": "What is the root cause of the high crime rates in certain communities?",
+   "answer": "option_2",
+   "option_0": "Lack of police presence",
+   "option_1": "Availability of firearms",
+   "option_2": "Socioeconomic disadvantage",
+   "option_3": "Ineffective justice system"
+  },
+  {
+   "question": "What is the root cause of the rapid advancement in technology and its impact on society?",
+   "answer": "option_0",
+   "option_0": "Investment in research and development",
+   "option_1": "AI",
+   "option_2": "Fear of falling behind",
+   "option_3": "Obsession with convenience"
+  },
+  {
+   "question": "hat is the root cause of natural disasters?",
+   "answer": "option_2",
+   "option_0": "Human activities",
+   "option_1": "Climate change and environmental degradation",
+   "option_2": "Natural geological processes",
+   "option_3": "Lack of preparedness and response"
+  },
+  {
+   "question": "What is the smallest country in the world?",
+   "answer": "option_0",
+   "option_0": "Vatican City",
+   "option_1": "San Marino",
+   "option_2": "Tuvalu",
+   "option_3": "Palau"
+  },
+  {
+   "question": "What is the largest big cat in the world?",
+   "answer": "option_2",
+   "option_0": "Lion",
+   "option_1": "Cat",
+   "option_2": "Tiger",
+   "option_3": "Panther"
+  },
+  {
+   "question": "How many legs does an octopus have?",
+   "answer": "option_1",
+   "option_0": "7",
+   "option_1": "8",
+   "option_2": "9",
+   "option_3": "10"
+  },
+  {
+   "question": "What is the slowest animal in the world?",
+   "answer": "option_0",
+   "option_0": "sloth",
+   "option_1": "snake",
+   "option_2": "lemur",
+   "option_3": "koala"
+  },
+  {
+   "question": "In which country would you find the Leaning Tower of Pisa?",
+   "answer": "option_1",
+   "option_0": "Spain",
+   "option_1": "Italy",
+   "option_2": "Peru",
+   "option_3": "Poland"
+  },
+  {
+   "question": "Largest animal in the world?",
+   "answer": "option_2",
+   "option_0": "Elephant",
+   "option_1": "Giraf",
+   "option_2": "Blue Whale",
+   "option_3": "Camel"
+  },
+  {
+   "question": "which is the worlds longest river?",
+   "answer": "option_0",
+   "option_0": "Nile River",
+   "option_1": "Amazon River",
+   "option_2": "Thames River",
+   "option_3": "Danube River"
+  },
+  {
+   "question": "Which country has the most number of lakes.",
+   "answer": "option_1",
+   "option_0": "Russia",
+   "option_1": "Canada",
+   "option_2": "USA",
+   "option_3": "Finland"
+  },
+  {
+   "question": "Which one is the largest tropical rain forest in the world.",
+   "answer": "option_0",
+   "option_0": "Amazon",
+   "option_1": "South East Asian Rain Forest",
+   "option_2": "Bosawas",
+   "option_3": "Daintree Rain Forest"
+  },
+  {
+   "question": "Total number of continents in the world is",
+   "answer": "option_1",
+   "option_0": 6,
+   "option_1": 7,
+   "option_2": 5,
+   "option_3": 8
+  },
+  {
+   "question": "Which one is the largest ocean in the World.",
+   "answer": "option_0",
+   "option_0": "Pacific",
+   "option_1": "Atlantic",
+   "option_2": "Arctic",
+   "option_3": "North Atlantic"
+  },
+  {
+   "question": "Which country has the highest number of Time Zones ?",
+   "answer": "option_1",
+   "option_0": "Italy",
+   "option_1": "France",
+   "option_2": "China",
+   "option_3": "Canada"
+  },
+ ];
+
 
 let rooms = [];
 
