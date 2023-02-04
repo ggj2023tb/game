@@ -57,12 +57,15 @@
             $('#content').load('stages/join-room.html');
             setInterval(function () {
                 socket.send(JSON.stringify({ "type": "getRooms" }));
-            }, 1000);
+            }, 3000);
         }).on('submit', '#createGameForm', function(event){
             event.preventDefault();
             socket.send(JSON.stringify({ "type": "createGame", "name": $('#roomName').val() }));
         }).on('click', '#startGame', function(){
             socket.send(JSON.stringify({ "type": "startGame", "roomId": roomId }));
+        }).on('click', '#joinOpenRoom', function(){
+            roomId = $(this).data("roomId");
+            socket.send(JSON.stringify({ "type": "joinRoom", "roomId": roomId, "playerName": playerName }));
         }).on('click', '.awnserButton', function(){
             $('.awnserButton').prop('disabled', true);
             socket.send(JSON.stringify({ "type": "awnser", "roomId": roomId, "playerId": playerId, "question": $(this).data('question'), "answer": $(this).data('answer') }));
@@ -96,7 +99,7 @@
             data.rooms.forEach(function(room, index){
                 if (room.status == 'open') {
                     console.log(room.id );
-                    openRoomsCards += '<div class="room-card col-md-4"><div class="room-content" room_id = '+ room.id +'><h4 class="title"> Room #'+ room.id +'</h4></div><ul class="join"><li>Join</li></ul></div>';
+                    openRoomsCards += '<div class="room-card col-md-4"><div class="room-content"><h4 class="title"> Room #'+ room.id +'</h4></div><ul class="join"><button type="button"  class="btn btn-success" id="joinOpenRoom" data-roomId = '+ room.id +' > Join !</button></ul></div>';
                 }
             });
             $('.container-room-card .row').html(openRoomsCards);

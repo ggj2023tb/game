@@ -44,7 +44,7 @@
     width: 100%;
     padding: 0;
     margin: 0;
-    background-color: #67ce13;
+    background-color: #198754;
     position: absolute;
     bottom: -100px;
     left: 0;
@@ -69,6 +69,6 @@
   }
   
   .room-card .join li a:hover {
-    color: #67ce13;
+    color: #198754;
     background-color: #f7f5ec;
   }
