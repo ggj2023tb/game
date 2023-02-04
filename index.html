@@ -57,7 +57,7 @@
             $('#content').load('stages/join-room.html');
             setInterval(function () {
                 socket.send(JSON.stringify({ "type": "getRooms" }));
-            }, 5000);
+            }, 1000);
         }).on('submit', '#createGameForm', function(event){
             event.preventDefault();
             socket.send(JSON.stringify({ "type": "createGame", "name": $('#roomName').val() }));
@@ -87,6 +87,7 @@
         }
 
         if (data.type == 'getRooms') {
+            // console.log(data.rooms);
             /*
              * loop over rooms and create html for rooms with status == "open"
              * $('xyz').html(generateHTML). add room.roomId as "data-roomId"

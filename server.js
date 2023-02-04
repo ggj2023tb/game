@@ -1,8 +1,8 @@
-const WebSocket = require('ws');
+const WebSocket = require("ws");
 const wss = new WebSocket.Server({ port: 9000 });
 Array.prototype.random = function () {
-    return this[Math.floor((Math.random()*this.length))];
-}
+  return this[Math.floor(Math.random() * this.length)];
+};
 /*
 const questions = [
     {
@@ -150,90 +150,108 @@ const questions = [
 */
 
 const questions = [
-        {
-            "question": "1+2",
-            "answer": "option_0",
-            "option_0": "3",
-            "option_1": "2",
-            "option_2": "1",
-            "option_3": "4"
-        },
-        {
-            "question": "3+4",
-            "answer": "option_0",
-            "option_0": "7",
-            "option_1": "8",
-            "option_2": "9",
-            "option_3": "10"
-        },
-        {
-            "question": "1*3",
-            "answer": "option_0",
-            "option_0": "3",
-            "option_1": "1",
-            "option_2": "5",
-            "option_3": "10"
-        },
+  {
+    question: "1+2",
+    answer: "option_0",
+    option_0: "3",
+    option_1: "2",
+    option_2: "1",
+    option_3: "4",
+  },
+  {
+    question: "3+4",
+    answer: "option_0",
+    option_0: "7",
+    option_1: "8",
+    option_2: "9",
+    option_3: "10",
+  },
+  {
+    question: "1*3",
+    answer: "option_0",
+    option_0: "3",
+    option_1: "1",
+    option_2: "5",
+    option_3: "10",
+  },
 ];
 
 let rooms = [];
 
-wss.on('connection', function connection(ws) {
-    ws.on('message', function (msg) {
-        obj = JSON.parse(msg);
+function getRoom(rooms, requestId) {
+  const findRoom = rooms.find(function (room) {
+    return room.id === requestId;
+  });
+  return findRoom;
+}
 
-        if (obj.type == 'createGame') {
-            let startDate = Date.now();
-            let roomId = Date.now();
+wss.on("connection", function connection(ws) {
+  ws.on("message", function (msg) {
+    obj = JSON.parse(msg);
 
-            questionList = new Array();
-            questions.forEach(function (question, index) {
-                questionList.push({
-                    startDate: startDate,
-                    endDate: startDate + 10000,
-                    question: question
-                });
-                startDate += 10000;
-            });
+    if (obj.type == "createGame") {
+      let startDate = Date.now();
+      let roomId = Date.now();
 
-            rooms[roomId] = {
-                "name": obj.name,
-                "status": "open",
-                "players": [],
-                "questions": questionList
+      questionList = new Array();
+      questions.forEach(function (question, index) {
+        questionList.push({
+          startDate: startDate,
+          endDate: startDate + 10000,
+          question: question,
+        });
+        startDate += 10000;
+      });
+      rooms.push({
+        id: roomId,
+        name: obj.name,
+        status: "open",
+        players: [],
+        questions: questionList,
+      });
+
+      ws.send(JSON.stringify({ type: "createGame", roomId: roomId }));
+    } else if (obj.type == "joinRoom") {
+      let playerId = Date.now();
+      getRoom(rooms, obj.roomId).players.push({
+        points: 0,
+        id: playerId,
+        name: obj.playerName,
+      });
+
+      ws.send(
+        JSON.stringify({
+          type: "joinRoom",
+          playerId: playerId,
+          roomId: obj.roomId,
+        })
+      );
+    } else if (obj.type == "startGame") {
+      getRoom(rooms, obj.roomId).status = "running";
+      console.log(rooms);
+    } else if (obj.type == "updateGame") {
+      ws.send(
+        JSON.stringify({ type: "updateGame", room: getRoom(rooms, obj.roomId) })
+      );
+    } else if (obj.type == "getRooms") {
+      ws.send(JSON.stringify({ type: "getRooms", rooms: rooms }));
+    } else if (obj.type == "awnser") {
+      getRoom(rooms, obj.roomId).questions.forEach(function (question, index) {
+        if (question.question.question == obj.question) {
+          getRoom(rooms, obj.roomId).players.forEach(function (
+            player,
+            playerIndex
+          ) {
+            if (player.id == obj.playerId) {
+              if (obj.answer == question.question.answer) {
+                getRoom(rooms, obj.roomId).players[playerIndex].points++;
+              } else {
+                //rooms[obj.roomId].players[playerIndex].points--;
+              }
             }
-
-            ws.send(JSON.stringify({type: 'createGame', roomId: roomId}));
-        } else if (obj.type == 'joinRoom') {
-            let playerId = Date.now();
-            rooms[obj.roomId].players.push({
-                points: 0,
-                id: playerId,
-                name: obj.playerName
-            });
-
-            ws.send(JSON.stringify({type: 'joinRoom', playerId: playerId, roomId: obj.roomId}));
-        } else if (obj.type == 'startGame') {
-            rooms[obj.roomId].status = "running";
-        } else if (obj.type == 'updateGame') {
-            ws.send(JSON.stringify({type: 'updateGame', room: rooms[obj.roomId]}));
-        } else if (obj.type == 'getRooms') {
-            ws.send(JSON.stringify({type: 'getRooms', rooms: rooms}));
-        } else if (obj.type == 'awnser') {
-            rooms[obj.roomId].questions.forEach (function (question, index) {
-                if (question.question.question == obj.question) {
-                    rooms[obj.roomId].players.forEach(function (player, playerIndex) {
-                        if (player.id == obj.playerId) {
-                            if (obj.answer == question.question.answer) {
-                                rooms[obj.roomId].players[playerIndex].points++;
-                            } else {
-                                //rooms[obj.roomId].players[playerIndex].points--;
-                            }
-                        }
-                    });
-                }
-            });
+          });
         }
-    });
+      });
+    }
+  });
 });
-
