@@ -113,6 +113,12 @@
                 if (data.room.status == 'running') {
                     $('#content').load('stages/game.html', function () {
                         inGame = true;
+                        data.room.players.forEach(function (player, index) {
+                            $('#canvas').append(
+                            '<div class="col-lg-3 parentCol"><strong>'+ player.name + '</strong><br /><small class="points">('+ player.points +')</small>' +'<div data-points="'+player.points+'" class="trunk_'+player.id+'" style="background-repeat:no-repeat;background-image: url(img/'+index+'.png); background-position:top; height: 150px;"></div></div>'
+                        );
+                        });
+
                     });
                 } else {
                         let playersNames = '' ;
@@ -132,12 +138,13 @@
 
             if (inGame) {
                 let currentTime = Date.now();
+                let maxQuestion = data.room.questions.length;
 
                 data.room.questions.forEach(function (question, index) {
                     if (currentTime >= question.startDate && currentTime <= question.endDate) {
                         if (currentQuestion == null || (currentQuestion.question.question !== question.question.question)) {
                             currentQuestion = question;
-                            $('#question').html('<h2>' + question.question.question + '</h2>');
+                            $('#question').html('<h2>' + question.question.question + '</h2>('+ (index+1) +'/'+ maxQuestion + ' question)');
                             let html = '';
                             html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_0" type="button" value="' + question.question['option_0'] + '"/>';
                             html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_1" type="button" value="' + question.question['option_1'] + '"/>';
@@ -157,6 +164,8 @@
                 }
 
                 data.room.players.forEach(function (player, index) {
+                    $('.trunk_'+player.id).closest('.parentCol').find('.points').text(player.points);
+
                     if ($('.trunk_'+player.id).data('points') < player.points) {
                         $('.trunk_'+player.id).data('points', player.points);
                     }
