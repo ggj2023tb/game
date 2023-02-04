@@ -20,7 +20,7 @@
             <img class="mb-4" src="img/logo.png" style="width: 200px; height: 200px;" />
             <h3 class="mb-3 font-weight-normal">QRoots</h3>
             <br />
-            <h1 class="mb-3">Do you even Roots ?</h1>
+            <h1 class="mb-3">Do you have the longest root?</h1>
             <div class="row">
                 <div class="offset-lg-5 col-lg-2">
                     <form id="homeForm" method="post">
@@ -106,9 +106,10 @@
             if (!inGame && data.room.status == 'running') {
                 $('#content').load('stages/game.html', function () {
                     inGame = true;
-
                     data.room.players.forEach(function (player, index) {
-                        $('.canvas').append('<div class="tree" style="padding-right: 250px;"><div class="trunk trunk_'+player.id+'" data-points="0"></div></div>');
+                        $('.canvas').append(
+                            '<div data-points="'+player.points+'" class="trunk_'+player.id+'" style="background-repeat:no-repeat;background-image: url(img/'+index+'.png); height: 150px; width: 200px;"></div>'
+                        );
                     });
                 });
             }
@@ -141,7 +142,7 @@
 
                 data.room.players.forEach(function (player, index) {
                     if ($('.trunk_'+player.id).data('points') < player.points) {
-                        $('.trunk_'+player.id).append('<div class="branch"><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div></div>');
+                        $('.trunk_'+player.id).animate({height: (150+(100*player.points))},1500);
                         $('.trunk_'+player.id).data('points', player.points);
                     }
                 });
