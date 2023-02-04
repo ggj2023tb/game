@@ -48,6 +48,8 @@
             $('#content').load('stages/menu.html');
         }).on('click', '#createGameStage', function(event){
             $('#content').load('stages/create-game.html');
+        }).on('click', '#joinRoomStage', function(event){
+            $('#content').load('stages/join-room.html');
         }).on('submit', '#createGameForm', function(event){
             event.preventDefault();
             socket.send(JSON.stringify({ "type": "createGame", "name": $('#roomName').val() }));
