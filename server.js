@@ -345,10 +345,10 @@ wss.on("connection", function connection(ws) {
       questions.forEach(function (question, index) {
         questionList.push({
           startDate: startDate,
-          endDate: startDate + 10000,
+          endDate: startDate + 20000,
           question: question,
         });
-        startDate += 10000;
+        startDate += 20000;
       });
       rooms.push({
         id: roomId,
