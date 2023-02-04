@@ -338,13 +338,24 @@ wss.on("connection", function connection(ws) {
     obj = JSON.parse(msg);
 
     if (obj.type == "createGame") {
+      let startDate = Date.now();
       let roomId = Date.now();
+
+      questionList = new Array();
+      questions.forEach(function (question, index) {
+        questionList.push({
+          startDate: startDate,
+          endDate: startDate + 10000,
+          question: question,
+        });
+        startDate += 10000;
+      });
       rooms.push({
         id: roomId,
         name: obj.name,
         status: "open",
         players: [],
-        questions: [],
+        questions: questionList,
       });
 
       ws.send(JSON.stringify({ type: "createGame", roomId: roomId }));
@@ -363,17 +374,6 @@ wss.on("connection", function connection(ws) {
         })
       );
     } else if (obj.type == "startGame") {
-      let startDate = Date.now();
-      questionList = new Array();
-      questions.forEach(function (question, index) {
-        questionList.push({
-          startDate: startDate,
-          endDate: startDate + 10000,
-          question: question,
-        });
-        startDate += 10000;
-      });
-      getRoom(rooms, obj.roomId).questions = questionList;
       getRoom(rooms, obj.roomId).status = "running";
     } else if (obj.type == "updateGame") {
       ws.send(

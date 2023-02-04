@@ -7,7 +7,7 @@
     <meta name="description" content="homepage">
     <meta name="author" content="">
     <link rel="icon" href="img/favicon.ico">
-    <title>QRoots</title>
+    <title>The Root Quiz</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -17,9 +17,9 @@
     <div id="content">
         <div class="container-fluid text-center">
             <img class="mb-4" src="img/logo.png" style="width: 200px; height: 200px;" />
-            <h3 class="mb-3 font-weight-normal">QRoots</h3>
+            <h3 class="mb-3 font-weight-normal">The Root Quiz</h3>
             <br />
-            <h1 class="mb-3">Do you have the longest root?</h1>
+            <h1 class="mb-3">Will you get the longest root?</h1>
             <div class="row">
                 <div class="offset-lg-5 col-lg-2">
                     <form id="homeForm" method="post">
@@ -67,12 +67,14 @@
             }, 3000);
         }).on('submit', '#createGameForm', function(event){
             event.preventDefault();
+            setInterval(function () {
+                socket.send(JSON.stringify({ "type": "isRoomReady" }));
+            }, 3000);
             socket.send(JSON.stringify({ "type": "createGame", "name": $('#roomName').val() }));
         }).on('click', '#startGame', function(){
             socket.send(JSON.stringify({ "type": "startGame", "roomId": roomId }));
         }).on('click', '.joinOpenRoom', function(){
             roomId = $(this).attr("data-roomId");
-            console.log(roomId, JSON.stringify({ "type": "joinRoom", "roomId": roomId, "playerName": playerName }));
             socket.send(JSON.stringify({ "type": "joinRoom", "roomId": roomId, "playerName": playerName }));
         }).on('click', '.awnserButton', function(){
             $('.awnserButton').prop('disabled', true);
@@ -110,15 +112,21 @@
         };
 
         if (data.type == 'updateGame') {
-            if (!inGame && data.room.status == 'running') {
-                $('#content').load('stages/game.html', function () {
-                    inGame = true;
-                    data.room.players.forEach(function (player, index) {
-                        $('#canvas').append(
-                            '<div class="col-lg-3">'+ player.name +'<div data-points="'+player.points+'" class="trunk_'+player.id+'" style="background-repeat:no-repeat;background-image: url(img/'+index+'.png); background-position:top; height: 150px;"></div></div>'
+            if (!inGame){
+                if (data.room.status == 'running') {
+                    $('#content').load('stages/game.html', function () {
+                        inGame = true;
+                        data.room.players.forEach(function (player, index) {
+                            $('#canvas').append(
+                            '<div class="col-lg-3"><strong>'+ player.name + '</strong><br /><small>('+ player.points +')</small>' +'<div data-points="'+player.points+'" class="trunk_'+player.id+'" style="background-repeat:no-repeat;background-image: url(img/'+index+'.png); background-position:top; height: 150px;"></div></div>'
                         );
+                        });
                     });
-                });
+                } else {
+                    if (data.room.players.length > 1) {
+                        $('.startGame').prop('disabled', false);
+                    }
+                }
             }
 
             if (inGame) {
