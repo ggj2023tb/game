@@ -6,19 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="homepage">
     <meta name="author" content="">
-    <title>The Root Quiz</title>
+    <title>Who Wants to Be a Rootionaire?</title>
     <link rel="icon" href="img/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="css/styles.css" rel="stylesheet">
   </head>
   <body>
     <div id="content">
         <div class="container-fluid text-center">
             <img class="mb-4" src="img/logo.png" style="width: 200px; height: 200px;" />
-            <h1 class="mb-3 font-weight-normal">The Root Quiz</h1>
-            <h4 class="mb-3">Will you get the longest root?</h4>
+            <h1 class="mb-3 font-weight-normal">Who Wants to Be a Rootionaire?</h1>
+            <h4 class="mb-3">Will you grow the longest root?</h4>
             <div class="row">
                 <div class="offset-lg-5 col-lg-2">
                     <form id="homeForm" method="post">
@@ -28,6 +28,8 @@
                     </form>
                 </div>
             </div>
+            <br />
+            <div class="mb-3"><small><p>GGJ 2023 - Made with ❤️ by Dhia, Domi, Pranta, Ayoob.</p></small></div>
         </div>
     </div>
   </body>
@@ -77,6 +79,7 @@
             socket.send(JSON.stringify({ "type": "joinRoom", "roomId": roomId, "playerName": playerName }));
         }).on('click', '.awnserButton', function(){
             $('.awnserButton').prop('disabled', true);
+            $(this).addClass('border border-5 border-warning');
             socket.send(JSON.stringify({ "type": "awnser", "roomId": roomId, "playerId": playerId, "question": $(this).data('question'), "answer": $(this).data('answer') }));
         })
     });
@@ -98,6 +101,18 @@
             setInterval(function () {
                 socket.send(JSON.stringify({ "type": "updateGame", "roomId": roomId }));
             }, 1000);
+        }
+
+        if (data.type == 'feedback') {
+            $( ".awnserButton" ).each(function( index ) {
+                if ($(this).data('question') == data.question.question) {
+                    if ($(this).data('answer') == data.question.answer) {
+                        $(this).addClass('btn-success');
+                    } else {
+                        $(this).addClass('btn-danger');
+                    }
+                }
+            });
         }
 
         if (data.type == 'getRooms') {
@@ -131,9 +146,10 @@
                             }
                         });
                         $('#user').html(playersNames);
-                    if (data.room.players.length > 1) {
+                    if (data.room.players.length > 4) {
+                        $('.startGame').prop('disabled', true);
+                    } else {
                         $('.startGame').prop('disabled', false);
-                        
                     }
                 }
             }
@@ -148,12 +164,25 @@
                             currentQuestion = question;
                             $('#question').html('<h2>' + question.question.question + '</h2>('+ (index+1) +'/'+ maxQuestion + ' question)');
                             let html = '';
-                            html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_0" type="button" value="' + question.question['option_0'] + '"/>';
-                            html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_1" type="button" value="' + question.question['option_1'] + '"/>';
-                            html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_2" type="button" value="' + question.question['option_2'] + '"/>';
-                            html += '<input class="awnserButton btn btn-primary m-2" data-question="' + question.question.question + '" data-answer="option_3" type="button" value="' + question.question['option_3'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary m-2 border border-5" data-question="' + question.question.question + '" data-answer="option_0" type="button" value="' + question.question['option_0'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary m-2 border border-5" data-question="' + question.question.question + '" data-answer="option_1" type="button" value="' + question.question['option_1'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary m-2 border border-5" data-question="' + question.question.question + '" data-answer="option_2" type="button" value="' + question.question['option_2'] + '"/>';
+                            html += '<input class="awnserButton btn btn-primary m-2 border border-5" data-question="' + question.question.question + '" data-answer="option_3" type="button" value="' + question.question['option_3'] + '"/>';
                             $('#answers').html(html);
                         }
+                    }
+
+                    if ((index+1) == maxQuestion && currentTime > question.endDate) {
+                        let html = '<ul>';
+                        let leader = 0;
+
+                        data.room.players.forEach(function (player, index) {
+                            html += '<li>'+player.name + ': ' + player.points+'</li>';
+                        });
+
+                        html += '</ul><p><small>Pictures Pixabay, made without game engine.</small></p>'
+                        $('#finalMessage').html(html);
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal')).show()
                     }
                 });
 
