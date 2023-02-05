@@ -14,6 +14,9 @@
     <link href="css/styles.css" rel="stylesheet">
   </head>
   <body>
+  <audio loop muted src="sound/background.ogg"></audio>
+  <audio muted id="growSound" src="sound/grow.mp3"></audio>
+
     <div id="content">
         <div class="container-fluid text-center">
             <img class="mb-4" src="img/logo.png" style="width: 200px; height: 200px;" />
@@ -50,6 +53,10 @@
         $(document).on('submit', '#homeForm', function(event){
             event.preventDefault();
             playerName = $("#username").val();
+
+            audio = document.querySelector("audio");
+            audio.muted = false;
+            audio.play();
 
             $('#content').load('stages/menu.html', function () {
                 $('#user').html('Your name: <strong>'+playerName+'</strong>');
@@ -183,13 +190,13 @@
 
                     if ((index+1) == maxQuestion && currentTime > question.endDate) {
                         let html = '<ul>';
-                        let leader = 0;
 
                         data.room.players.forEach(function (player, index) {
                             html += '<li>'+player.name + ': ' + player.points+'</li>';
                         });
 
-                        html += '</ul><hr /><p><small>Pictures can be found on pixabay.com, <a target="_blank" href="https://www.flaticon.com/free-icons/question" title="question icons">Question icons created by Darius Dan - Flaticon</a>, made without game engine.</small></p>'
+                        html += '</ul><hr /><p><small>Pictures can be found on pixabay.com, <a target="_blank" href="https://www.flaticon.com/free-icons/question" title="question icons">Question icons created by Darius Dan - Flaticon</a>,' +
+                            ' <a target="_blank" href="https://freesound.org">Sounds from freesound.org</a>,  made without game engine.</small></p>'
                         $('#finalMessage').html(html);
                         bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal')).show()
                     }
@@ -203,14 +210,23 @@
                     }
                 }
 
+                let playSound = false;
                 data.room.players.forEach(function (player, index) {
                     $('.trunk_'+player.id).closest('.parentCol').find('.points').text(player.points);
 
                     if ($('.trunk_'+player.id).data('points') < player.points) {
+                        playSound = true;
                         $('.trunk_'+player.id).animate({height: (150+(30*player.points))},2500);
                         $('.trunk_'+player.id).data('points', player.points);
                     }
                 });
+
+                if (playSound) {
+                    audio = document.getElementById("growSound");
+                    audio.muted = false;
+                    audio.playbackRate = 3;
+                    audio.play();
+                }
             }
         }
     });
